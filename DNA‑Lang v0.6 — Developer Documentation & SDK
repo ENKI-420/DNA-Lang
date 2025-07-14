@@ -1,0 +1,271 @@
+# DNA‑Lang v0.6 — Developer Documentation & SDK
+
+> **Status:** Beta | **Latest Build:** v0.6.0 | **Language Spec Version:** 2025‑07‑14
+>
+> **Repo:** `github.com/dna-lang/dna-lang`
+> **Package:** `npm i -g dna-lang`
+
+---
+
+## Table of Contents
+
+1. [Introduction](#1-introduction)
+2. [Core Concepts](#2-core-concepts)
+   - [Organisms](#organisms)
+   - [Genes](#genes)
+   - [Agents](#agents)
+   - [Evolution Rules](#evolution-rules)
+   - [Immune Responses](#immune-responses)
+3. [Language Grammar](#3-language-grammar)
+4. [CLI Quick‑Start](#4-cli-quick-start)
+5. [SDK Usage (Typescript API)](#5-sdk-usage-typescript-api)
+6. [Runtime Engine](#6-runtime-engine)
+7. [Kubernetes Operator](#7-kubernetes-operator)
+8. [IDE & Tooling](#8-ide--tooling)
+9. [Marketplace Publishing](#9-marketplace-publishing)
+10. [Security & Compliance](#10-security--compliance)
+11. [Extending DNA‑Lang](#11-extending-dna-lang)
+12. [Reference Appendix](#12-reference-appendix)
+
+---
+
+## 1. Introduction
+
+DNA‑Lang treats software as **living organisms**. Each `.dna` file describes an adaptive system that can mutate, heal, and collaborate via built‑in agents.
+
+```
+organism HelloWorld {
+  dna { domain: "demo" }
+  gene Greeter {
+    implementation: "function greet() { console.log('Hello, world'); }"
+  }
+}
+```
+
+Running `dna compile` transpiles this to TypeScript / WASM. `dna run` executes the organism inside a sandboxed runtime that can evolve over time.
+
+---
+
+## 2. Core Concepts
+
+### Organisms
+
+Top‑level container. Required fields:
+
+| Field       | Type     | Description                         |
+| ----------- | -------- | ----------------------------------- |
+| `dna`       | block    | Non‑code metadata & global traits   |
+| `agents`    | block    | Named agent instances               |
+| `gene`      | block(s) | Functional units (code + mutations) |
+| `evolution` | block(s) | Triggered mutation rules            |
+
+### Genes
+
+```
+gene UserAuth {
+  purpose: "Identity verification"
+  implementation: {
+    strategy: jwt_with_refresh,
+    code: "async function auth(c) { /* … */ }"
+  }
+  mutations: {
+    add_biometrics: "/* patch */",
+    rotate_secrets:  "/* patch */"
+  }
+  immune_responses: {
+    brute_force: "rate_limit(); alert();"
+  }
+}
+```
+
+### Agents
+
+Lightweight actors that coordinate gene execution. Example:
+
+```
+agents {
+  security: SecurityAgent(vigilance: max)
+  dev:      DeveloperAgent(speed: fast)
+}
+```
+
+### Evolution Rules
+
+Trigger‑based mutation logic.
+
+```
+evolution ResilienceBoost {
+  trigger: "error_rate > 0.01"
+  mutations {
+    optimize_retry   { target: "p99 < 200ms" }
+  }
+}
+```
+
+### Immune Responses
+
+Attach to genes or organisms to auto‑respond to threats.
+
+---
+
+## 3. Language Grammar
+
+> Formal grammar excerpt (EBNF). Full ANTLR spec in `/grammar/DNALang.g4`.
+
+```
+organism      ::= "organism" IDENT "{" organismBody "}"
+organismBody  ::= dnaBlock agentsBlock? (geneBlock | evolutionBlock)*
+…
+```
+
+---
+
+## 4. CLI Quick‑Start
+
+```bash
+npm i -g dna-lang
+# Create scaffold
+dna new my-app && cd my-app
+# Compile .dna → TS
+dna compile src/*.dna -o dist
+# Run with live evolution monitoring
+dna run dist/organism.js --monitor
+```
+
+| Command          | Description                  |
+| ---------------- | ---------------------------- |
+| `dna new <name>` | Scaffold demo organism       |
+| `dna compile`    | Transpile .dna to JS/TS/WASM |
+| `dna run`        | Execute organism runtime     |
+| `dna evolve`     | Manually apply next mutation |
+
+---
+
+## 5. SDK Usage (Typescript API)
+
+Install in your Node project:
+
+```bash
+npm i dna-lang-sdk
+```
+
+```ts
+import { compileFile, Runtime } from 'dna-lang-sdk';
+
+// 1. Compile at runtime
+const jsPath = await compileFile('organisms/app.dna');
+// 2. Load & run
+const runtime = new Runtime(jsPath, {
+  onMutation: m => console.log('applied', m.name)
+});
+runtime.start();
+```
+
+### Important Classes
+
+| Class      | Purpose                                 |
+| ---------- | --------------------------------------- |
+| `Compiler` | Programmatic .dna → JS/TS transpilation |
+| `Runtime`  | Sandbox + evolution loop                |
+| `Mutation` | Type representing code patch            |
+| `Agent`    | Base class for custom agents            |
+
+---
+
+## 6. Runtime Engine
+
+* **Sandbox:** VM2 (Node) or WebAssembly (browser).
+* **Lifecycle:** `observe → mutate → test → commit/rollback` every *N* seconds.
+* **Hooks:** `onFitnessCalculated`, `onMutationApplied`, `onRollback`.
+* **Extensibility:** plug‑in fitness evaluators (e.g., Lighthouse, Semgrep).
+
+Diagram:
+
+```
+[ Organism ]--{mutations}-->[ Sandbox ]--pass/fail-->[ Hot‑Swap ]
+```
+
+---
+
+## 7. Kubernetes Operator
+
+CRD `dna.sh1ft.dev/v1`: `kind: Organism`.
+Sample manifest:
+
+```yaml
+apiVersion: dna.sh1ft.dev/v1
+kind: Organism
+metadata:
+  name: ecommerce-app
+spec:
+  dnaFile: gs://bucket/ecommerce.dna
+  evolutionRate: adaptive
+  replicas: 3
+```
+
+Controller handles compile, config‑map injection, and rolling evolution.
+
+---
+
+## 8. IDE & Tooling
+
+* **DNA‑Lang IDE (Monaco‑based):** live transpile & mutation panel
+* **VS Code Extension:** syntax, snippets, LSP, `dna:run` task
+* **GitHub Action:** see `.github/workflows/dna-organism-deploy.yml` example
+
+---
+
+## 9. Marketplace Publishing
+
+1. Tag gene pack repo with `dna-gene`.
+2. Add `package.json#dnaMeta` with `type`, `version`, `compat`.
+3. Submit via `dna publish --token $API_KEY`.
+   Marketplace share: 80 % author / 20 % platform.
+
+---
+
+## 10. Security & Compliance
+
+* **Sandbox isolation** (VM2 jail) prevents breakout.
+* **Semgrep Gene** auto‑patches CVEs before mutation commit.
+* **Audit Logs:** signed JSON lines → S3 / GCS.
+* HIPAA/SOC2 alignment docs in `/compliance/`.
+
+---
+
+## 11. Extending DNA‑Lang
+
+* **Custom Agents:** extend `Agent` base, register via `agents` block.
+* **New Grammars:** add parser via `registerBlock()` (see `registry.ts`).
+* **Alt Targets:** write `CompilerBackend` to emit Rust, Go, etc.
+
+---
+
+## 12. Reference Appendix
+
+### Environment Variables
+
+| Var                    | Default | Description                 |
+| ---------------------- | ------- | --------------------------- |
+| `DNA_RUNTIME_INTERVAL` | `2000`  | ms between evolution cycles |
+| `DNA_SANDBOX_TIMEOUT`  | `100`   | ms per mutation test        |
+
+### HTTP API (Runtime Daemon)
+
+| Method | Path       | Function                |
+| ------ | ---------- | ----------------------- |
+| `GET`  | `/healthz` | Liveness                |
+| `POST` | `/mutate`  | Force‑apply mutation    |
+| `GET`  | `/state`   | Current fitness + stats |
+
+---
+
+### Changelog (excerpt)
+
+* **v0.6.0** – Parser/Runtime hot‑swap, Marketplace beta, memGPT memory layer.
+* **v0.5.0** – K8s CRD, Edge runtime, Security linter gene.
+* **v0.4.0** – IDE v1, CLI `dna evolve`, test harness.
+
+---
+
+**© 2025 Agile Defense Systems LLC – All rights reserved.**
