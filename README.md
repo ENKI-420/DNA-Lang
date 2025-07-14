@@ -1,156 +1,264 @@
-🧬 DNA-Lang: The Genetic Programming Language for Living Software
-Revolutionizing Software with Biological Principles
-DNA-Lang is a groundbreaking genetic programming language designed for "living software" – applications that can self-evolve, self-heal, self-optimize, and adapt autonomously in response to real-world conditions. Imagine code that behaves like a biological organism: resilient, efficient, and capable of perpetual self-improvement. That's the promise of DNA-Lang.
+# DNA-Lang: The Genetic Programming Language
 
-Why "Living Software"?
-In an increasingly complex and dynamic digital world, static, brittle software is a liability. Traditional applications require constant human intervention for maintenance, security updates, and performance tuning. DNA-Lang fundamentally changes this by embedding the principles of evolution, immune systems, and collaborative intelligence directly into the software's genetic blueprint.
+🧬 **DNA-Lang** is a revolutionary programming language that treats code as living organisms with genetic traits, evolution capabilities, and AI agent collaboration built-in.
 
-✨ Core Concepts & Features
-DNA-Lang views software as an organism, composed of genes, which are executed by intelligent agents that interact within a defined collaboration workflow. These organisms are designed to react to their environment through mutations and immune responses.
+## 🚀 Quick Start
 
-Self-Evolving Code: Define mutations within your genes that specify how your software can adapt its logic or structure based on performance metrics, security threats, or new feature demands.
+### Installation
 
-Built-in Agent Collaboration: Organisms are composed of intelligent agents (instances of genes) that inherently understand how to communicate and collaborate to achieve complex tasks, minimizing integration overhead.
-
-Self-Protecting Code (Immune System): Declare immune_responses that enable your software to detect and neutralize threats or vulnerabilities autonomously, enhancing resilience.
-
-Self-Optimizing Performance: Genes can specify optimization targets, allowing the underlying evolution engine to iteratively refine implementations for better efficiency.
-
-Declarative & Intuitive Syntax: Focus on what your software should do and how it should adapt, letting the DNA-Lang runtime manage the complex "how."
-
-🚀 Getting Started (MVP)
-Our current Minimum Viable Product (MVP) focuses on the core DNA-Lang transpiler and a foundational agent runtime. You can define simple organisms, transpile them to TypeScript, and observe their basic agent collaboration in a simulated environment.
-
-Prerequisites
-Node.js (v18 or higher)
-
-npm (v9 or higher)
-
-1. Installation
-Clone the DNA-Lang repository and install dependencies:
-
-Bash
-
-git clone https://github.com/DNA-Lang/DNA-Lang.git
-cd DNA-Lang
+```bash
 npm install
-2. Compile Your First Organism
-Let's compile the basic-organism.dna example file. This file defines a simple organism with a UserAuthentication gene that performs an authenticate action.
+npm run build
+```
 
-examples/basic-organism.dna (Simplified Excerpt):
+### Create Your First Organism
 
-Code snippet
+```bash
+# Create a new organism
+node dist/cli.js new MyApp
 
-organism BasicOrganism {
-    // Defines a core functional unit for user authentication
-    gene UserAuthentication {
-        purpose: "Secure user identity verification"
-        security_level: critical
-        evolution_constraints: [maintain_backwards_compatibility, preserve_security]
+# Compile to TypeScript
+node dist/cli.js compile MyApp.dna
 
-        implementation: {
-            strategy: jwt_with_refresh,
-            mutation_safety: high,
-            performance_impact: minimal,
-            code: `async function authenticate(credentials) {
-                // Simulating an async authentication process
-                let token = await jwt.sign(credentials, secret);
-                this.evolve.track_performance(operation: "authenticate"); // For future evolution
-                return { token, expires_in: 3600 };
-            }`
-        }
+# Run the living organism
+node dist/cli.js run MyApp.dna
+```
 
-        mutations: {
-            // Placeholder for future mutation definitions
-        }
-        immune_responses: {
-            // Placeholder for future immune response definitions
-        }
+## 🧬 Language Features
+
+### 1. **Organism Definition**
+
+Define living software organisms with DNA, genome, and agent collaborations:
+
+```dna
+organism ECommerceApp {
+    dna {
+        domain: "ecommerce"
+        scale: "enterprise"
+        security_level: "high"
+        evolution_rate: "adaptive"
+        immune_system: enabled
     }
 
-    // Defines how agents (instances of genes) collaborate
-    collaboration Workflow {
-        steps: [
-            UserAuthentication.authenticate(), // Authenticate user
-            // ... more steps for other genes/agents
-        ]
-        goals: [
-            "ensure_secure_access",
-            "optimize_authentication_speed"
-        ]
+    genome {
+        trait performance_optimized: always_active
+        trait security_hardened: paranoid_mode
+        trait user_experience: delightful
+    }
+
+    agents {
+        architect: ArchitectAgent(focus: microservices)
+        security: SecurityAgent(vigilance: maximum)
+        developer: DeveloperAgent(speed: fast)
     }
 }
-Now, run the transpiler:
+```
 
-Bash
+### 2. **Agent Collaboration**
 
-npm run build && node dist/cli.js compile examples/basic-organism.dna
-Expected Output:
+Define how AI agents collaborate to build features:
 
-🧬 DNA-Lang Compiler v0.1.0
-Compiling: examples/basic-organism.dna
-🔍 Lexical analysis...
-🌳 Parsing AST...
-✨ Transpiling to TypeScript...
-✅ Compilation successful!
-Output written to: dist/basic-organism.ts
-This command will convert the DNA-Lang code into dist/basic-organism.ts, a TypeScript file that can be executed.
+```dna
+collaboration BuildPaymentFlow {
+    participants: ["architect", "security", "developer"]
+    workflow: [
+        "architect.design_flow",
+        "security.validate_design",
+        "developer.implement",
+        "security.audit"
+    ]
+    conflict_resolution: {
+        security_vs_speed: prioritize_security,
+        complexity_vs_simplicity: favor_simplicity
+    }
+}
+```
 
-3. Run the Basic Agent Orchestration Demo
-We've implemented a basic runtime prototype (ARP-01) that can simulate the agent collaboration defined in your DNA-Lang organism.
+### 3. **Gene Definition** (Coming Soon)
 
-To run the demo (assuming dist/basic-organism.ts was generated):
+Define genetic code that can evolve and self-optimize:
 
-Bash
+```dna
+gene DatabaseQuery {
+    purpose: "High-performance database operations"
+    security_level: critical
 
-node dist/cli.js run dist/basic-organism.ts
-Expected Output:
+    implementation: {
+        strategy: connection_pooling,
+        code: "async function query(sql) { /* implementation */ }"
+    }
 
-🧬 DNA-Lang Runtime v0.1.0
-Loading Organism: dist/basic-organism.ts
+    mutations: {
+        optimize_performance: {
+            methods: ["indexing", "caching", "query_rewriting"],
+            target: "response_time < 50ms"
+        }
+    }
 
-Initiating Collaboration Workflow for 'UserAuthentication' Gene...
+    immune_responses: {
+        sql_injection: "sanitize_and_block",
+        slow_query: "optimize_automatically"
+    }
+}
+```
 
-[Agent: UserAuthentication] Calling: authenticate(credentials)
-  - Simulating authentication process...
-  - Token generated: { token: "simulated_jwt", expires_in: 3600 }
+## 💻 Generated Output
 
-Collaboration Workflow for 'UserAuthentication' Completed.
-This output demonstrates the DNA-Lang runtime instantiating the UserAuthentication agent and executing its authenticate action as part of the defined Collaboration Workflow.
+DNA-Lang transpiles to:
 
-🛣️ Roadmap & Vision
-Our journey is just beginning. The successful transpiler and basic runtime lay the groundwork for realizing the full potential of DNA-Lang.
+1. **TypeScript Code** - Living organism classes with evolution and self-healing
+2. **Agent Configurations** - JSON configs for AI agent coordination
+3. **Metadata** - Organism DNA, capabilities, and collaboration rules
 
-Phase 1 (MVP - ✅ COMPLETE): Core Language Transpiler & Basic Agent Runtime.
+### Example Generated TypeScript
 
-Phase 2 (Current Focus):
+```typescript
+export class ECommerceApp implements OrganismInterface {
+  public readonly dna: DNAConfig = {
+    domain: "ecommerce",
+    scale: "enterprise",
+    security_level: "high",
+    evolution_rate: "adaptive",
+    immune_system: true
+  };
 
-Advanced Transpiler for Mutations & Immune Responses.
+  public readonly agents = new Map<string, AgentInterface>();
 
-Core Evolution Engine Logic (applying mutations, fitness evaluation).
+  constructor() {
+    this.initializeAgents();
+    this.startEvolutionLoop();
+  }
 
-Initial IDE Integration (Visualization of agent collaboration).
+  public async evolve(): Promise<void> {
+    console.log("🧬 ECommerceApp is evolving...");
+    await this.performanceOptimized();
+    await this.securityHardened();
+    await this.userExperience();
+  }
 
-Phase 3 (Future):
+  public async selfHeal(): Promise<void> {
+    if (this.dna.immune_system) {
+      console.log("🛡️ ECommerceApp immune system activating...");
+      // Self-healing logic here
+    }
+  }
+}
+```
 
-Full-fledged DNAStudio IDE with Genetic Visualization and Live Debugging.
+## 🎯 Use Cases
 
-Complex Evolutionary Algorithms & Multi-Objective Optimization.
+### 1. **Multi-Agent Development**
 
-Robust Immune System Implementation & Threat Response.
+- Coordinate architect, developer, security, and QA agents
+- Automated code review and optimization workflows
+- Conflict resolution between competing priorities
 
-Inter-Organism Communication & Distributed Living Systems.
+### 2. **Self-Evolving Applications**
 
-Deployment to production-grade environments (serverless, edge computing).
+- Applications that improve performance over time
+- Automatic security patching and hardening
+- Adaptive user experience optimization
 
-Our ultimate vision is a future where software systems are not merely deployed, but born, capable of infinite self-improvement and resilience, leading to a new era of truly autonomous and intelligent digital life forms.
+### 3. **Enterprise Integration**
 
-🤝 Contributing
-We welcome contributions from visionaries, language designers, compiler engineers, and anyone passionate about the future of software. Please see our CONTRIBUTING.md (coming soon!) for guidelines.
+- Living APIs that evolve with usage patterns
+- Self-healing microservices
+- Genetic compliance and governance
 
-📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 🧪 Examples
 
-Current Time in Jeffersonville, Indiana, United States: Monday, July 14, 2025, 10:05 AM EDT.
+### Basic Organism
 
-What is your next command for the DNA-Lang project?
+```bash
+node dist/cli.js compile examples/simple-test.dna
+```
+
+### E-Commerce App (Work in Progress)
+
+```bash
+node dist/cli.js compile examples/basic-organism.dna
+```
+
+## 🔧 Development
+
+### Project Structure
+
+```
+dna-lang/
+├── src/
+│   ├── lexer.ts      # Tokenizes DNA-Lang source
+│   ├── parser.ts     # Builds AST from tokens
+│   ├── transpiler.ts # Converts AST to TypeScript
+│   ├── cli.ts        # Command-line interface
+│   └── types.ts      # Type definitions
+├── examples/         # Example organisms
+└── dist/            # Compiled output
+```
+
+### Building
+
+```bash
+npm run build        # Compile TypeScript
+npm run dev          # Development mode
+npm test            # Run tests (coming soon)
+```
+
+## 🌟 Roadmap
+
+### Phase 1: Core Language ✅
+
+- [x] Basic organism, agent, and collaboration syntax
+- [x] TypeScript transpilation
+- [x] CLI tool
+- [x] Agent configuration generation
+
+### Phase 2: Evolution Engine (In Progress)
+
+- [ ] Gene definition and mutation system
+- [ ] Safe code evolution framework
+- [ ] Performance optimization genetics
+- [ ] Immune system implementation
+
+### Phase 3: Agent Integration
+
+- [ ] Real AI agent coordination
+- [ ] Live collaboration workflows
+- [ ] Conflict resolution algorithms
+- [ ] Multi-agent debugging tools
+
+### Phase 4: Advanced Features
+
+- [ ] Inter-organism communication
+- [ ] Collective intelligence network
+- [ ] Visual DNA helix code editor
+- [ ] Genetic marketplace
+
+## 🤝 Contributing
+
+DNA-Lang is the future of software development. Join us in creating the first programming language where code evolves, protects itself, and collaborates through AI agents.
+
+## 📜 License
+
+MIT License - See LICENSE file
+
+---
+
+**DNA-Lang: Where Code Becomes Life** 🧬✨
+
+## Experimental: ANTLR Grammar & Nested Block Support
+
+### Parser Refinement (In Progress)
+
+- The DNA-Lang parser is being upgraded to support deeper/nested block structures (e.g., blocks within blocks for mutations, implementation, etc.).
+- This will allow for more expressive DNA-Lang constructs and future extensibility.
+
+### ANTLR Grammar Branch (Experimental)
+
+- An experimental branch is being created to explore using [ANTLR](https://www.antlr.org/) for DNA-Lang parsing.
+- ANTLR grammar files will be placed in a new directory: `src/antlr/`.
+- This branch will not disrupt mainline progress and will be used for research and prototyping a robust grammar.
+
+### How to Contribute/Experiment
+
+- To try the ANTLR grammar, see `src/antlr/DNALang.g4` (to be created).
+- Contributions to both the hand-written parser and the ANTLR grammar are welcome.
