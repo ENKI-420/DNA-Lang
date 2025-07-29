@@ -1,0 +1,24 @@
+organism SimpleTest {
+    dna {
+        domain: "demo"
+        scale: "small"
+        evolution_rate: "adaptive"
+        immune_system: enabled
+    }
+
+    genome {
+        trait responsive: always_active
+        trait secure: enabled
+    }
+
+    agents {
+        dev: DeveloperAgent(speed: fast)
+    }
+
+    gene HelloWorld {
+        purpose: "Basic greeting functionality"
+        implementation: {
+            code: "function sayHello() { console.log('Hello from DNA-Lang!'); return 'Hello from DNA-Lang!'; }"
+        }
+    }
+}
