@@ -28,8 +28,11 @@ import argparse
 import logging
 from typing import Optional
 
-# Add package root to path
-sys.path.insert(0, '/home/runner/work/DNA-Lang/DNA-Lang')
+# Add package root to path for imports
+import os
+_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+if _ROOT_DIR not in sys.path:
+    sys.path.insert(0, _ROOT_DIR)
 
 # Core RG engine
 from lib.sovereign_rg_engine.constants import (

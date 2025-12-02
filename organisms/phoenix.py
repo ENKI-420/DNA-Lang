@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 import time
 
 import sys
-sys.path.insert(0, '/home/runner/work/DNA-Lang/DNA-Lang')
+import os as _os; _PKG_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))); sys.path.insert(0, _PKG_ROOT) if _PKG_ROOT not in sys.path else None
 
 from lib.sovereign_rg_engine.constants import (
     GAMMA_THRESHOLD,

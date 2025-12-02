@@ -6,7 +6,7 @@ import sys
 import unittest
 import time
 
-sys.path.insert(0, '/home/runner/work/DNA-Lang/DNA-Lang')
+import os as _os; _TEST_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))); sys.path.insert(0, _TEST_ROOT) if _TEST_ROOT not in sys.path else None
 
 from kernel.consciousness_state import ConsciousnessState
 from kernel.events import (

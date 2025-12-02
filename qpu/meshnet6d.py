@@ -14,7 +14,7 @@ import hashlib
 import json
 
 import sys
-sys.path.insert(0, '/home/runner/work/DNA-Lang/DNA-Lang')
+import os as _os; _PKG_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))); sys.path.insert(0, _PKG_ROOT) if _PKG_ROOT not in sys.path else None
 
 from kernel.consciousness_state import ConsciousnessState
 from kernel.events import KernelEventType, emit_event

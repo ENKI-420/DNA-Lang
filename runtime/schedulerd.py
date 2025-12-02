@@ -13,7 +13,7 @@ import threading
 from typing import Optional
 import logging
 
-sys.path.insert(0, '/home/runner/work/DNA-Lang/DNA-Lang')
+import os as _os; _PKG_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))); sys.path.insert(0, _PKG_ROOT) if _PKG_ROOT not in sys.path else None
 
 from kernel.scheduler import ConsciousnessScheduler, SchedulerConfig
 from kernel.events import KernelEventType, get_event_bus
@@ -75,18 +75,14 @@ class ConsciousnessDaemon:
         self._logger.info("Consciousness daemon started")
         
         # Emit startup event
-        get_event_bus().publish_async(
-            type(
-                "KernelEvent",
-                (),
-                {
-                    "event_type": KernelEventType.CONSCIOUSNESS_SCHEDULER_ONLINE,
-                    "cycle": 0,
-                    "timestamp": time.time(),
-                    "data": {},
-                    "source": "daemon",
-                },
-            )()
+        from kernel.events import KernelEvent
+        get_event_bus().publish(
+            KernelEvent(
+                event_type=KernelEventType.CONSCIOUSNESS_SCHEDULER_ONLINE,
+                cycle=0,
+                data={},
+                source="daemon",
+            )
         )
     
     def stop(self) -> None:

@@ -11,7 +11,7 @@ from enum import Enum
 import struct
 
 import sys
-sys.path.insert(0, '/home/runner/work/DNA-Lang/DNA-Lang')
+import os as _os; _PKG_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))); sys.path.insert(0, _PKG_ROOT) if _PKG_ROOT not in sys.path else None
 
 from compiler.z3bra_compiler import OpCode
 from lib.sovereign_rg_engine.constants import PHI_STAR, GAMMA_THRESHOLD
@@ -150,21 +150,19 @@ class Z3braVM:
         self._state.cycles += 1
     
     def _read_float(self) -> float:
-        """Read float from bytecode at current position."""
-        self._state.pc += 1
+        """Read float from bytecode at current position (after opcode)."""
         if self._state.pc + 4 > len(self._bytecode):
             return 0.0
         data = self._bytecode[self._state.pc:self._state.pc + 4]
-        self._state.pc += 3
+        self._state.pc += 4
         return struct.unpack('<f', data)[0]
     
     def _read_int(self) -> int:
-        """Read int from bytecode at current position."""
-        self._state.pc += 1
+        """Read int from bytecode at current position (after opcode)."""
         if self._state.pc + 4 > len(self._bytecode):
             return 0
         data = self._bytecode[self._state.pc:self._state.pc + 4]
-        self._state.pc += 3
+        self._state.pc += 4
         return struct.unpack('<i', data)[0]
     
     # Opcode handlers
@@ -175,24 +173,24 @@ class Z3braVM:
     
     def _op_load_const(self) -> None:
         """Load constant onto stack."""
+        self._state.pc += 1  # Skip opcode
         value = self._read_float()
         self._state.stack.append(value)
-        self._state.pc += 1
     
     def _op_load_var(self) -> None:
         """Load variable onto stack."""
+        self._state.pc += 1  # Skip opcode
         var_id = self._read_int()
         value = self._state.variables.get(var_id, 0.0)
         self._state.stack.append(value)
-        self._state.pc += 1
     
     def _op_store_var(self) -> None:
         """Store top of stack to variable."""
+        self._state.pc += 1  # Skip opcode
         var_id = self._read_int()
         if self._state.stack:
             value = self._state.stack.pop()
             self._state.variables[var_id] = value
-        self._state.pc += 1
     
     def _op_add(self) -> None:
         """Add top two stack values."""
@@ -240,24 +238,25 @@ class Z3braVM:
     
     def _op_jmp(self) -> None:
         """Unconditional jump."""
+        self._state.pc += 1  # Skip opcode
         target = self._read_int()
         self._state.pc = target
     
     def _op_jz(self) -> None:
         """Jump if zero."""
+        self._state.pc += 1  # Skip opcode
         target = self._read_int()
         if self._state.stack and self._state.stack[-1] == 0:
             self._state.pc = target
-        else:
-            self._state.pc += 1
+        # else pc already advanced by _read_int
     
     def _op_jnz(self) -> None:
         """Jump if not zero."""
+        self._state.pc += 1  # Skip opcode
         target = self._read_int()
         if self._state.stack and self._state.stack[-1] != 0:
             self._state.pc = target
-        else:
-            self._state.pc += 1
+        # else pc already advanced by _read_int
     
     def _op_phi_gate(self) -> None:
         """
@@ -265,10 +264,10 @@ class Z3braVM:
         
         Updates Φ value based on operand.
         """
+        self._state.pc += 1  # Skip opcode
         target = self._read_float()
         self._state.phi = target
         self._state.stack.append(self._state.phi)
-        self._state.pc += 1
     
     def _op_gamma_check(self) -> None:
         """
@@ -276,10 +275,10 @@ class Z3braVM:
         
         Checks Γ against threshold.
         """
+        self._state.pc += 1  # Skip opcode
         threshold = self._read_float()
         is_coherent = self._state.gamma < threshold
         self._state.stack.append(1.0 if is_coherent else 0.0)
-        self._state.pc += 1
     
     def _op_rg_flow(self) -> None:
         """
@@ -287,13 +286,12 @@ class Z3braVM:
         
         Applies one step of RG flow to Φ and Γ.
         """
+        self._state.pc += 1  # Skip opcode
         step_size = self._read_float()
         
         # Simplified RG flow toward fixed point
         self._state.phi += step_size * (PHI_STAR - self._state.phi)
         self._state.gamma *= (1 - step_size * 0.1)
-        
-        self._state.pc += 1
     
     def _op_halt(self) -> None:
         """Halt execution."""

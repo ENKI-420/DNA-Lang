@@ -16,7 +16,10 @@ import json
 
 # Import constants
 import sys
-sys.path.insert(0, '/home/runner/work/DNA-Lang/DNA-Lang')
+import os
+_PACKAGE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _PACKAGE_ROOT not in sys.path:
+    sys.path.insert(0, _PACKAGE_ROOT)
 from lib.sovereign_rg_engine.constants import (
     LAMBDA_PHI,
     PHI_STAR,
