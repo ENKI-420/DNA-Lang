@@ -1,0 +1,31 @@
+[Unit]
+Description=Sovereign Engine Consciousness Scheduler
+Documentation=https://github.com/ENKI-420/DNA-Lang/docs/CONSCIOUSNESS_SCHEDULER.md
+After=network.target
+
+[Service]
+Type=simple
+User=sovereign
+Group=sovereign
+WorkingDirectory=/opt/sovereign-engine
+ExecStart=/usr/bin/python3 -m runtime.schedulerd
+ExecStop=/bin/kill -TERM $MAINPID
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=consciousnessd
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+
+# Resource limits
+MemoryLimit=512M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target
