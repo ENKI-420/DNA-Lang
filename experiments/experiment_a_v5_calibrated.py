@@ -175,12 +175,6 @@ def run_vqe(hamiltonian, ansatz, initial_params):
     estimator = Estimator()
     optimizer = COBYLA(maxiter=MAX_ITER)
     
-    # Track optimization progress
-    energies = []
-    
-    def callback(nfev, params, value, meta):
-        energies.append(value)
-    
     # Objective function
     def objective(params):
         bound_circuit = ansatz.assign_parameters(params)
