@@ -15,6 +15,8 @@ from crypto.lambda_phi_sig import LambdaPhiSignature
 from organisms.phoenix import PhoenixOrganism
 from organisms.genome import Genome, Gene
 from lib.sovereign_rg_engine.constants import GAMMA_THRESHOLD
+from qpu.quantumbridge import QuantumBridge, BackendType
+from qpu.backend import SovereignQuantumBackend
 
 
 class TestQCXLedger(unittest.TestCase):
@@ -224,6 +226,109 @@ class TestGenome(unittest.TestCase):
         
         self.assertEqual(clone.generation, genome.generation + 1)
         self.assertIsNotNone(clone.get_gene("Gene1"))
+
+
+class TestQuantumBridge(unittest.TestCase):
+    """Test QuantumBridge with multiple backends."""
+    
+    def test_simulator_backend(self):
+        """Test simulator backend."""
+        bridge = QuantumBridge(backend_type=BackendType.SIMULATOR)
+        
+        circuit = {
+            "qubits": 2,
+            "gates": [{"type": "h", "qubit": 0}],
+            "measurements": [0, 1],
+        }
+        
+        job_id = bridge.submit_circuit(circuit)
+        self.assertIsNotNone(job_id)
+        
+        status = bridge.get_job_status(job_id)
+        self.assertEqual(status, "completed")
+        
+        result = bridge.get_result(job_id)
+        self.assertIsNotNone(result)
+        self.assertIn("counts", result)
+    
+    def test_ionq_backend_creation(self):
+        """Test IonQ backend initialization."""
+        # Without API key (should raise error)
+        with self.assertRaises(ValueError):
+            QuantumBridge(backend_type=BackendType.IONQ)
+        
+        # With API key (should succeed)
+        bridge = QuantumBridge(
+            backend_type=BackendType.IONQ,
+            ionq_api_key="test_key",
+            ionq_backend="ionq.simulator",
+        )
+        self.assertEqual(bridge.backend_type, BackendType.IONQ)
+    
+    def test_ionq_backend_execution(self):
+        """Test IonQ backend execution (stub mode)."""
+        bridge = QuantumBridge(
+            backend_type=BackendType.IONQ,
+            ionq_api_key="test_api_key",
+            ionq_backend="ionq.qpu.aria-1",
+        )
+        
+        circuit = {
+            "qubits": 2,
+            "gates": [{"type": "h", "qubit": 0}],
+            "measurements": [0, 1],
+        }
+        
+        job_id = bridge.submit_circuit(circuit)
+        result = bridge.get_result(job_id)
+        
+        self.assertIsNotNone(result)
+        self.assertIn("ionq_metadata", result)
+        self.assertEqual(result["ionq_metadata"]["backend"], "ionq.qpu.aria-1")
+    
+    def test_available_backends(self):
+        """Test listing available backends."""
+        bridge = QuantumBridge()
+        backends = bridge.get_available_backends()
+        
+        self.assertIn("simulator", backends)
+        self.assertIn("ibm_quantum", backends)
+        self.assertIn("ionq", backends)
+
+
+class TestSovereignQuantumBackend(unittest.TestCase):
+    """Test SovereignQuantumBackend with IonQ support."""
+    
+    def test_backend_creation_simulator(self):
+        """Test creating backend with simulator."""
+        backend = SovereignQuantumBackend(backend_type=BackendType.SIMULATOR)
+        info = backend.get_backend_info()
+        
+        self.assertEqual(info["backend_type"], "simulator")
+        self.assertIn("ionq", info["available_backends"])
+    
+    def test_backend_creation_ionq(self):
+        """Test creating backend with IonQ."""
+        backend = SovereignQuantumBackend(
+            backend_type=BackendType.IONQ,
+            ionq_api_key="test_key",
+            ionq_backend="ionq.simulator",
+        )
+        info = backend.get_backend_info()
+        
+        self.assertEqual(info["backend_type"], "ionq")
+    
+    def test_measure_coherence_ionq(self):
+        """Test coherence measurement with IonQ backend."""
+        backend = SovereignQuantumBackend(
+            backend_type=BackendType.IONQ,
+            ionq_api_key="test_key",
+        )
+        
+        coherence = backend.measure_coherence()
+        self.assertIsInstance(coherence, float)
+        self.assertGreaterEqual(coherence, 0.0)
+        self.assertLessEqual(coherence, 1.0)
 
 
 if __name__ == '__main__':

@@ -87,6 +87,9 @@ class SovereignEngine:
         headless: bool = False,
         enable_meshnet: bool = True,
         debug: bool = False,
+        backend: Optional['BackendType'] = None,
+        ionq_api_key: Optional[str] = None,
+        ionq_backend: str = "ionq.simulator",
     ):
         """
         Initialize the Sovereign Engine.
@@ -95,10 +98,16 @@ class SovereignEngine:
             headless: Run without display rendering
             enable_meshnet: Enable MeshNet-6D networking
             debug: Enable debug logging
+            backend: Quantum backend type (defaults to SIMULATOR)
+            ionq_api_key: IonQ API key (required for IonQ backend)
+            ionq_backend: IonQ backend name (e.g., "ionq.qpu.aria-1", "ionq.simulator")
         """
         self._headless = headless
         self._enable_meshnet = enable_meshnet
         self._debug = debug
+        self._backend = backend
+        self._ionq_api_key = ionq_api_key
+        self._ionq_backend = ionq_backend
         
         # Set up logging
         log_level = logging.DEBUG if debug else logging.INFO
@@ -288,8 +297,16 @@ class SovereignEngine:
     
     def _init_quantum(self) -> None:
         """Initialize Quantum Backend."""
-        self._quantum = SovereignQuantumBackend()
-        self._logger.debug("Quantum backend initialized")
+        from qpu.quantumbridge import BackendType
+        
+        backend_type = self._backend or BackendType.SIMULATOR
+        
+        self._quantum = SovereignQuantumBackend(
+            backend_type=backend_type,
+            ionq_api_key=self._ionq_api_key,
+            ionq_backend=self._ionq_backend,
+        )
+        self._logger.debug(f"Quantum backend initialized: {backend_type.value}")
     
     def _register_handlers(self) -> None:
         """Register event handlers."""

@@ -47,3 +47,16 @@ LEDGER_COMMIT_INTERVAL: int = 50
 
 # Critical decoherence multiplier for Lazarus Protocol activation
 LAZARUS_ACTIVATION_MULTIPLIER: float = 2.0
+
+# Golden ratio (φ)
+GOLDEN_RATIO: float = 1.618033988749895
+
+# φ⁸ quantum anomaly prediction
+# τ₀ = 46 μs ≈ φ⁸ = 46.98 μs
+PHI_8_MICROSECONDS: float = 46.9787  # μs
+
+# IIT Consciousness threshold (from MISSION_CORE)
+PHI_THRESHOLD: float = 0.7734
+
+# Torsion-locked angle (θ_lock) - alternative naming for RESONANCE_ANGLE
+THETA_LOCK: float = RESONANCE_ANGLE  # 51.843 degrees

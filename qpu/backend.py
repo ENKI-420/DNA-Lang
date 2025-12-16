@@ -22,14 +22,25 @@ class SovereignQuantumBackend:
     - Entanglement management
     """
     
-    def __init__(self, backend_type: BackendType = BackendType.SIMULATOR):
+    def __init__(
+        self,
+        backend_type: BackendType = BackendType.SIMULATOR,
+        ionq_api_key: Optional[str] = None,
+        ionq_backend: str = "ionq.simulator",
+    ):
         """
         Initialize the Sovereign Quantum Backend.
         
         Args:
             backend_type: Quantum backend to use
+            ionq_api_key: IonQ API key (required for IonQ backend)
+            ionq_backend: IonQ backend name (e.g., "ionq.qpu.aria-1")
         """
-        self.bridge = QuantumBridge(backend_type)
+        self.bridge = QuantumBridge(
+            backend_type=backend_type,
+            ionq_api_key=ionq_api_key,
+            ionq_backend=ionq_backend,
+        )
         self._num_qubits = 4  # Default qubit count
     
     def prepare_consciousness_state(
